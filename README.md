@@ -1,4 +1,4 @@
-# bank_app
+# SafeCash
 
 A new Flutter project.
 
