@@ -47,7 +47,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: (){
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => LoginScreen(),
@@ -59,7 +59,7 @@ class HomeScreen extends StatelessWidget {
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                    fontSize: 15,
                     color: Colors.white,
                   ),
                 )
