@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:bank_app/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'home.dart';
 
@@ -11,8 +12,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 10), () {
-      // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+    Timer(Duration(seconds: 3), () {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
     });
   }
 
@@ -24,11 +25,12 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset("safecash_logo.png", width: 200),
-            SizedBox(height: 20),
+            Image.asset("assets/images/safecash_logo.png", width: 200),
+            const SizedBox(height: 8),
             Text(
               "SAFECASH",
               style: TextStyle(
+                fontFamily: 'Poppins',
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
