@@ -1,5 +1,5 @@
 import 'package:bank_app/screens/face_recognition.dart';
-import 'package:bank_app/screens/home.dart';
+import 'package:bank_app/screens/information.dart';
 import 'package:bank_app/screens/register.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -25,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => HomeScreen()),
+                  MaterialPageRoute(builder: (context) => InformationScreen()),
                 );
               },
               child: Container(
