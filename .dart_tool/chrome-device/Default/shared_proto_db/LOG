@@ -1,4 +1,7 @@
-2025/03/24-22:10:11.654 4c3c Reusing MANIFEST C:\Users\Lagoa\AppData\Local\Temp\flutter_tools.2c695c18\flutter_tools_chrome_device.b8b1ddae\Default\shared_proto_db/MANIFEST-000001
-2025/03/24-22:10:11.654 4c3c Recovering log #4
-2025/03/24-22:10:11.655 4c3c Reusing old log C:\Users\Lagoa\AppData\Local\Temp\flutter_tools.2c695c18\flutter_tools_chrome_device.b8b1ddae\Default\shared_proto_db/000004.log 
-2025/03/24-22:10:11.656 4c3c Delete type=0 #3
+2025/03/25-23:06:06.974 1e8c Reusing MANIFEST C:\Users\Lagoa\AppData\Local\Temp\flutter_tools.e1bb4d2b\flutter_tools_chrome_device.5c48d9a6\Default\shared_proto_db/MANIFEST-000001
+2025/03/25-23:06:06.975 1e8c Recovering log #4
+2025/03/25-23:06:06.977 1e8c Reusing old log C:\Users\Lagoa\AppData\Local\Temp\flutter_tools.e1bb4d2b\flutter_tools_chrome_device.5c48d9a6\Default\shared_proto_db/000004.log 
+2025/03/25-23:06:06.977 1e8c Delete type=0 #3
+2025/03/25-23:06:19.520 1e8c Level-0 table #8: started
+2025/03/25-23:06:19.525 1e8c Level-0 table #8: 134179 bytes OK
+2025/03/25-23:06:19.528 1e8c Delete type=0 #4

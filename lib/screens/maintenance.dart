@@ -6,8 +6,6 @@ class MaintenanceScreen extends StatefulWidget {
 }
 
 class _MaintenanceScreenState extends State<MaintenanceScreen> {
-  bool _obscureText = true;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +20,7 @@ class _MaintenanceScreenState extends State<MaintenanceScreen> {
                   Alignment.topLeft, 
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(
+                  Navigator.pop(
                     context,
                     MaterialPageRoute(
                       builder: (context) => MaintenanceScreen(),
