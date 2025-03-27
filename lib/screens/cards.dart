@@ -17,13 +17,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
         shape: BoxShape.circle,
         color: const Color.fromARGB(255, 30, 30, 45),
       ),
-      child: Center(
-        child: Icon(
-          icon,
-          color: Colors.grey,
-          size: 18,
-        ),
-      ),
+      child: Center(child: Icon(icon, color: Colors.grey, size: 18)),
     );
   }
 
@@ -128,7 +122,10 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                   alignment: Alignment.topCenter,
                   child: SizedBox(
                     width: 350,
-                    child: Image.asset("assets/images/card.png", fit: BoxFit.fitWidth),
+                    child: Image.asset(
+                      "assets/images/card.png",
+                      fit: BoxFit.fitWidth,
+                    ),
                   ),
                 ),
                 SizedBox(height: 25),
@@ -143,12 +140,32 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                         fontFamily: 'Poppins',
                       ),
                     ),
-                    Text(
-                      'Ver tudo',
-                      style: TextStyle(
-                        color: Colors.blueAccent,
-                        fontSize: 14,
-                        fontFamily: 'Poppins',
+                    GestureDetector(
+                      behavior:
+                          HitTestBehavior
+                              .opaque, 
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MaintenanceScreen(),
+                          ),
+                        );
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 5,
+                          horizontal: 10,
+                        ),
+                        child: Text(
+                          'Ver Tudo',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontSize: 14,
+                            fontFamily: 'Poppins',
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -164,13 +181,34 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Apple Store', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
-                            Text('Entretenimento', style: TextStyle(color: Colors.grey, fontSize: 12, fontFamily: 'Poppins')),
+                            Text(
+                              'Apple Store',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                            Text(
+                              'Entretenimento',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
                           ],
                         ),
                       ],
                     ),
-                    Text('- R\$5,99', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
+                    Text(
+                      '- R\$5,99',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: 20),
@@ -184,13 +222,34 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Spotify', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
-                            Text('Música', style: TextStyle(color: Colors.grey, fontSize: 12, fontFamily: 'Poppins')),
+                            Text(
+                              'Spotify',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                            Text(
+                              'Música',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
                           ],
                         ),
                       ],
                     ),
-                    Text('- R\$12,99', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
+                    Text(
+                      '- R\$12,99',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: 20),
@@ -204,13 +263,34 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Doceria', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
-                            Text('Restaurante', style: TextStyle(color: Colors.grey, fontSize: 12, fontFamily: 'Poppins')),
+                            Text(
+                              'Doceria',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                            Text(
+                              'Restaurante',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
                           ],
                         ),
                       ],
                     ),
-                    Text('- R\$87,99', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
+                    Text(
+                      '- R\$87,99',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: 20),
@@ -224,13 +304,34 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Makisu Dhama', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
-                            Text('Restaurante', style: TextStyle(color: Colors.grey, fontSize: 12, fontFamily: 'Poppins')),
+                            Text(
+                              'Makisu Dhama',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                            Text(
+                              'Restaurante',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
                           ],
                         ),
                       ],
                     ),
-                    Text('- R\$189,99', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontFamily: 'Poppins')),
+                    Text(
+                      '- R\$189,99',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Poppins',
+                      ),
+                    ),
                   ],
                 ),
                 SizedBox(height: 30),
@@ -245,7 +346,12 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                     children: [
                       Text(
                         'Limite de gastos mensais',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'Poppins'),
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          fontFamily: 'Poppins',
+                        ),
                       ),
                       SizedBox(height: 8),
                       Row(
@@ -253,7 +359,11 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                         children: [
                           Text(
                             'Valor: R\$ ${_spendingLimit.toStringAsFixed(2)}',
-                            style: TextStyle(color: Colors.grey, fontSize: 14, fontFamily: 'Poppins'),
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                              fontFamily: 'Poppins',
+                            ),
                           ),
                           Row(
                             children: [
@@ -265,7 +375,11 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                                     shape: BoxShape.circle,
                                     color: Colors.grey[700],
                                   ),
-                                  child: Icon(Icons.remove, color: Colors.white, size: 16),
+                                  child: Icon(
+                                    Icons.remove,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
                                 ),
                               ),
                               SizedBox(width: 10),
@@ -277,7 +391,11 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                                     shape: BoxShape.circle,
                                     color: Colors.blueAccent,
                                   ),
-                                  child: Icon(Icons.add, color: Colors.white, size: 16),
+                                  child: Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
                                 ),
                               ),
                             ],
@@ -315,18 +433,20 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
               ],
             ),
           ),
-          Positioned(
-            bottom: 225,
-            right: 0,
-            child: Transform.translate(
-              offset: Offset(20, 20),
-              child: Image.asset(
-                "assets/images/ellipse.png",
-                width: 200,
-                fit: BoxFit.contain,
+          IgnorePointer(
+           child: Positioned(
+              bottom: 225,
+              right: 0,
+              child: Transform.translate(
+                offset: Offset(400, 120),
+                child: Image.asset(
+                  "assets/images/ellipse.png",
+                  width: 200,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
-          ),
+          ),        
         ],
       ),
     );
