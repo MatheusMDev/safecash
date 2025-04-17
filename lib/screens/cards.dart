@@ -7,7 +7,9 @@ class MyCardsScreen extends StatefulWidget {
 }
 
 class _MyCardsScreenState extends State<MyCardsScreen> {
-  double _spendingLimit = 8545.00;
+  double _spendingLimit = 4600.00;
+  final double _minLimit = 0.0;
+  final double _maxLimit = 10000.0;
 
   Widget _buildTransactionIcon(IconData icon) {
     return Container(
@@ -19,20 +21,6 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
       ),
       child: Center(child: Icon(icon, color: Colors.grey, size: 18)),
     );
-  }
-
-  void _increaseLimit() {
-    setState(() {
-      _spendingLimit += 500.00;
-    });
-  }
-
-  void _decreaseLimit() {
-    setState(() {
-      if (_spendingLimit > 500.00) {
-        _spendingLimit -= 500.00;
-      }
-    });
   }
 
   @override
@@ -141,9 +129,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                       ),
                     ),
                     GestureDetector(
-                      behavior:
-                          HitTestBehavior
-                              .opaque, 
+                      behavior: HitTestBehavior.opaque,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -339,7 +325,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                   padding: EdgeInsets.all(15),
                   decoration: BoxDecoration(
                     color: const Color.fromARGB(255, 30, 30, 45),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(18),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -354,78 +340,70 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                         ),
                       ),
                       SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Valor: R\$ ${_spendingLimit.toStringAsFixed(2)}',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 14,
-                              fontFamily: 'Poppins',
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              GestureDetector(
-                                onTap: _decreaseLimit,
-                                child: Container(
-                                  padding: EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.grey[700],
-                                  ),
-                                  child: Icon(
-                                    Icons.remove,
-                                    color: Colors.white,
-                                    size: 16,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              GestureDetector(
-                                onTap: _increaseLimit,
-                                child: Container(
-                                  padding: EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.blueAccent,
-                                  ),
-                                  child: Icon(
-                                    Icons.add,
-                                    color: Colors.white,
-                                    size: 16,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                      Text(
+                        'Valor: R\$ ${_spendingLimit.toStringAsFixed(2)}',
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                          fontFamily: 'Poppins',
+                        ),
                       ),
-                      SizedBox(height: 15),
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          double progress = _spendingLimit / 10000;
-                          if (progress > 1.0) progress = 1.0;
-                          return Container(
-                            width: constraints.maxWidth,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[800],
-                              borderRadius: BorderRadius.circular(4),
+                      SliderTheme(
+                        data: SliderTheme.of(context).copyWith(
+                          activeTrackColor: Colors.white,
+                          inactiveTrackColor: Colors.grey[800],
+                          thumbColor: const Color.fromRGBO(60, 102, 255, 1),
+                          overlayColor: Colors.lightBlueAccent.withOpacity(0.3),
+                          thumbShape: RoundSliderThumbShape(
+                            enabledThumbRadius: 10,
+                            elevation: 3,
+                            pressedElevation: 5,
+                          ),
+                          trackHeight: 4,
+                          valueIndicatorColor: const Color.fromARGB(
+                            255,
+                            64,
+                            195,
+                            255,
+                          ).withOpacity(0.3),
+                          valueIndicatorTextStyle: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                        child: Slider(
+                          value: _spendingLimit,
+                          min: _minLimit,
+                          max: _maxLimit,
+                          divisions: 100,
+                          label: 'R\$ ${_spendingLimit.round()}',
+                          onChanged: (double newValue) {
+                            setState(() {
+                              _spendingLimit = newValue;
+                            });
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'R\$ ${_minLimit.toStringAsFixed(0)}',
+                              style: TextStyle(color: Colors.grey),
                             ),
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                width: constraints.maxWidth * progress,
-                                decoration: BoxDecoration(
-                                  color: Colors.blueAccent,
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                              ),
+                            Text(
+                              'R\$ 4.600',
+                              style: TextStyle(color: Colors.grey),
                             ),
-                          );
-                        },
+                            Text(
+                              'R\$ ${_maxLimit.toStringAsFixed(0)}',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -434,7 +412,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
             ),
           ),
           IgnorePointer(
-           child: Positioned(
+            child: Positioned(
               bottom: 225,
               right: 0,
               child: Transform.translate(
@@ -446,7 +424,7 @@ class _MyCardsScreenState extends State<MyCardsScreen> {
                 ),
               ),
             ),
-          ),        
+          ),
         ],
       ),
     );
