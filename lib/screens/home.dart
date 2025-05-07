@@ -112,7 +112,7 @@ class HomeContent extends StatelessWidget {
           Text("Saldo Total", style: TextStyle(color: Colors.grey, fontSize: 14)),
           SizedBox(height: 5),
           Text("R\$450,49",
-              style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+              style: TextStyle(color: Colors.white, fontSize: 30, fontWeight: FontWeight.bold)),
           SizedBox(height: 5),
           Icon(Icons.visibility, color: Colors.grey),
         ],
