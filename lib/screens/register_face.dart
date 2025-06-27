@@ -1,3 +1,5 @@
+import 'package:bank_app/screens/face_recognition.dart';
+import 'package:bank_app/screens/home.dart';
 import 'package:flutter/material.dart';
 
 class RegisterFaceScreen extends StatelessWidget {
@@ -43,7 +45,7 @@ class RegisterFaceScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/login');
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FaceRecognitionScreen()));
                 },
                 child: const Text(
                   'Cadastrar Face ID',
@@ -68,7 +70,7 @@ class RegisterFaceScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/login');
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                 },
                 child: const Text(
                   'Deixar para depois',

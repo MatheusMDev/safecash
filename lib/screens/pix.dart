@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-// Importando a tela de manutenção existente
 import 'maintenance.dart';
 
 class PixScreen extends StatefulWidget {
