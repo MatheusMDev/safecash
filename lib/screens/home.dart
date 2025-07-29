@@ -8,6 +8,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,7 +22,10 @@ class MyApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -106,60 +111,59 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: Color(0xFF1C1C2E),
         borderRadius: BorderRadius.circular(28),
+        // ignore: deprecated_member_use
         border: Border.all(color: Colors.white.withOpacity(0.05), width: 1),
+        image: DecorationImage(
+          image: AssetImage('assets/images/world.png'),
+          fit: BoxFit.cover,
+          opacity: 0.5,
+        ),
       ),
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Opacity(
-                opacity: 0.5,
-                child: Image.asset(
-                  'assets/images/world.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-          Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Saldo Total',
-                  style: TextStyle(color: Colors.grey[300], fontSize: 14),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  _isVisible ? 'R\$12.286,49' : '••••••',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Stack(
+          children: [
+            // Conteúdo central (saldo e texto)
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Saldo Total',
+                    style: TextStyle(color: Colors.grey[300], fontSize: 14),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            top: 12,
-            right: 12,
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _isVisible = !_isVisible;
-                });
-              },
-              child: Icon(
-                _isVisible ? Icons.visibility : Icons.visibility_off,
-                color: Colors.grey[300],
-                size: 20,
+                  SizedBox(height: 10),
+                  Text(
+                    _isVisible ? 'R\$450,49' : '••••••',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            // Botão de visibilidade
+            Positioned(
+              top: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isVisible = !_isVisible;
+                  });
+                },
+                child: Icon(
+                  _isVisible ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.grey[300],
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

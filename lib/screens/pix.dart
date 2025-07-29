@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'maintenance.dart';
 
 class PixScreen extends StatefulWidget {
+  const PixScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _PixScreenState createState() => _PixScreenState();
 }
 
@@ -66,7 +69,7 @@ class _PixScreenState extends State<PixScreen> {
               style: TextStyle(
                   color: const Color.fromARGB(200, 255, 255, 255), fontSize: 14)),
           SizedBox(height: 5),
-          Text("R\$450,49",
+          Text("R\$12.286,49",
               style: TextStyle(
                   fontSize: 50, fontWeight: FontWeight.bold, color: Colors.white)),
           SizedBox(height: 15),
@@ -158,6 +161,7 @@ class _PixScreenState extends State<PixScreen> {
                           ),
                     if (isSelected && index != 0)
                       CircleAvatar(
+                        // ignore: deprecated_member_use
                         backgroundColor: Colors.white.withOpacity(0.3),
                         radius: 28,
                       ),

@@ -3,7 +3,10 @@ import 'package:bank_app/screens/maintenance.dart';
 import 'package:flutter/material.dart';
 
 class MyCardsScreen extends StatefulWidget {
+  const MyCardsScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _MyCardsScreenState createState() => _MyCardsScreenState();
 }
 
