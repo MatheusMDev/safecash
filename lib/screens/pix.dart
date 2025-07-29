@@ -69,7 +69,7 @@ class _PixScreenState extends State<PixScreen> {
               style: TextStyle(
                   color: const Color.fromARGB(200, 255, 255, 255), fontSize: 14)),
           SizedBox(height: 5),
-          Text("R\$12.286,49",
+          Text("R\$15.000,00",
               style: TextStyle(
                   fontSize: 50, fontWeight: FontWeight.bold, color: Colors.white)),
           SizedBox(height: 15),

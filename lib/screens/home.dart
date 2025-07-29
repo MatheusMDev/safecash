@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    _isVisible ? 'R\$450,49' : '••••••',
+                    _isVisible ? 'R\$15.000,00' : '••••••',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 32,
