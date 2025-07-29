@@ -1,6 +1,12 @@
+// ignore_for_file: deprecated_member_use
+
+import 'package:bank_app/screens/face_recognition.dart';
+import 'package:bank_app/screens/register.dart';
 import 'package:flutter/material.dart';
 
 class RegisterFaceScreen extends StatelessWidget {
+  const RegisterFaceScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +49,7 @@ class RegisterFaceScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/login');
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FaceRecognitionScreen()));
                 },
                 child: const Text(
                   'Cadastrar Face ID',
@@ -68,7 +74,7 @@ class RegisterFaceScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/login');
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
                 },
                 child: const Text(
                   'Deixar para depois',
@@ -89,6 +95,8 @@ class RegisterFaceScreen extends StatelessWidget {
 }
 
 class FaceIDDesign extends StatelessWidget {
+  const FaceIDDesign({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Stack(
