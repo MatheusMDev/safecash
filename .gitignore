@@ -1,0 +1,93 @@
+# ==============================================
+# FLUTTER / DART
+# ==============================================
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+flutter_*.png
+*.dart.js
+*.js.deps
+*.js.map
+*.dill
+*.tmp
+
+# Logs
+*.log
+
+# Generated files
+coverage/
+lib/generated_plugin_registrant.dart
+
+# ==============================================
+# ANDROID
+# ==============================================
+android/.gradle/
+android/captures/
+android/.idea/
+android/local.properties
+android/key.properties
+android/app/key.jks
+*.iml
+*.apk
+*.aab
+*.keystore
+*.hprof
+
+# ==============================================
+# IOS / MACOS
+# ==============================================
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework/
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/App.framework
+ios/Flutter/ephemeral/
+ios/Runner.xcworkspace/
+ios/DerivedData/
+ios/build/
+macos/Pods/
+macos/Flutter/ephemeral/
+macos/build/
+
+# Xcode
+*.xcuserstate
+*.xcworkspace
+*.xcuserdatad
+*.moved-aside
+DerivedData/
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+
+# ==============================================
+# WINDOWS
+# ==============================================
+windows/flutter/ephemeral/
+windows/build/
+
+# ==============================================
+# WEB
+# ==============================================
+web/.dart_tool/
+web/.flutter-plugins
+web/.flutter-plugins-dependencies
+
+# ==============================================
+# VISUAL STUDIO CODE / INTELLIJ
+# ==============================================
+.vscode/
+.idea/
+*.iml
+
+# ==============================================
+# MISC
+# ==============================================
+*.lock
+*.bak
+*.swp
+*.tmp
+*.DS_Store
+*.class
+Thumbs.db
