@@ -4,6 +4,11 @@ import 'package:bank_app/screens/register.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+// >>> ADICIONE:
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../widgets/create_user.dart';
+import '../model/user.dart';
+
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -11,6 +16,76 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
+
+  // >>> ADICIONE:
+  final _cpfCtrl = TextEditingController();
+  final _pwCtrl = TextEditingController();
+  final _userController = UserController();
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _cpfCtrl.dispose();
+    _pwCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleLogin() async {
+    final cpf = _cpfCtrl.text.trim();
+    final pw = _pwCtrl.text;
+
+    if (cpf.isEmpty || pw.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Informe CPF e senha',
+            style: TextStyle(color: Colors.black, fontFamily: 'Poppins'),
+          ),
+          backgroundColor: const Color(0xFFFFF59D), // amarelo pastel
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _loading = true);
+    final user = await _userController.login(cpf, pw);
+    setState(() => _loading = false);
+
+    if (!mounted) return;
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'CPF ou senha incorretos',
+            style: TextStyle(color: Colors.white, fontFamily: 'Poppins'),
+          ),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    // Sucesso: navega para a tela de face (pode passar o user se quiser)
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FaceRecognitionScreen(/* user: user */),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +122,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 75),
-            Text(
+            const SizedBox(height: 75),
+            const Text(
               'Entrar',
               style: TextStyle(
                 color: Colors.white,
@@ -56,11 +131,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 fontFamily: 'Poppins',
               ),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
+
+            // ===== CPF =====
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'CPF',
                   style: TextStyle(
                     color: Colors.grey,
@@ -68,8 +145,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontFamily: 'Poppins',
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextField(
+                  controller: _cpfCtrl, // <<< LIGA AQUI
                   keyboardType: TextInputType.text,
                   style: const TextStyle(
                     color: Colors.white,
@@ -83,11 +161,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     prefixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          FontAwesomeIcons.solidIdCard,
-                          color: Color.fromARGB(255, 255, 255, 255),
-                        ),
+                      children: const [
+                        Icon(FontAwesomeIcons.solidIdCard, color: Colors.white),
                         SizedBox(width: 10),
                       ],
                     ),
@@ -104,13 +179,15 @@ class _LoginScreenState extends State<LoginScreen> {
             Container(
               height: 1.0,
               color: const Color.fromARGB(38, 158, 158, 158),
-              margin: EdgeInsets.only(top: 5.0),
+              margin: const EdgeInsets.only(top: 5.0),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
+
+            // ===== SENHA =====
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Senha',
                   style: TextStyle(
                     color: Colors.grey,
@@ -118,8 +195,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontFamily: 'Poppins',
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextField(
+                  controller: _pwCtrl, // <<< LIGA AQUI
                   obscureText: _obscureText,
                   keyboardType: TextInputType.text,
                   style: const TextStyle(
@@ -134,11 +212,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     prefixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.lock_outline,
-                          color: Color.fromARGB(255, 255, 255, 255),
-                        ),
+                      children: const [
+                        Icon(Icons.lock_outline, color: Colors.white),
                         SizedBox(width: 10),
                       ],
                     ),
@@ -149,11 +224,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             : Icons.visibility,
                         color: Colors.grey,
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureText = !_obscureText;
-                        });
-                      },
+                      onPressed:
+                          () => setState(() => _obscureText = !_obscureText),
                     ),
                     filled: true,
                     fillColor: Colors.transparent,
@@ -168,9 +240,12 @@ class _LoginScreenState extends State<LoginScreen> {
             Container(
               height: 1.0,
               color: const Color.fromARGB(38, 158, 158, 158),
-              margin: EdgeInsets.only(top: 5.0),
+              margin: const EdgeInsets.only(top: 5.0),
             ),
+
             const SizedBox(height: 20),
+
+            // ===== BOTÃO ENTRAR =====
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -184,34 +259,37 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FaceRecognitionScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Entrar',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Colors.white,
-                      ),
-                    ),
+                    onPressed: _loading ? null : _handleLogin, // <<< LOGIN
+                    child:
+                        _loading
+                            ? const SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                            : const Text(
+                              'Entrar',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: Colors.white,
+                              ),
+                            ),
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 20),
+
+            const SizedBox(height: 20),
+
+            // ===== LINK CADASTRAR =====
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Column(
                   children: [
-                    Text(
+                    const Text(
                       'É novo aqui?',
                       style: TextStyle(
                         color: Colors.grey,
@@ -219,17 +297,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontFamily: 'Poppins',
                       ),
                     ),
-                    SizedBox(height: 3),
+                    const SizedBox(height: 3),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (context) => RegisterScreen(),
-                          ),
+                          MaterialPageRoute(builder: (_) => RegisterScreen()),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Cadastre-se',
                         style: TextStyle(
                           color: Colors.blue,
@@ -243,7 +319,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ],
             ),
-            Spacer(),
+
+            const Spacer(),
           ],
         ),
       ),

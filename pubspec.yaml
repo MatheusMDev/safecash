@@ -2,7 +2,7 @@ name: bank_app
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -31,8 +31,8 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  cloud_firestore: ^4.15.8
   font_awesome_flutter: ^10.6.0
-
 
 dev_dependencies:
   flutter_test:
@@ -53,13 +53,10 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
-  
+
   fonts:
     - family: Poppins
       fonts:
         - asset: assets/fonts/Poppins-Light.ttf
         - asset: assets/fonts/Poppins-Regular.ttf
         - asset: assets/fonts/Poppins-Thin.ttf
-
-
-

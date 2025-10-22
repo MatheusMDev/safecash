@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "186779654097",
+    "project_id": "mvp-safeface",
+    "storage_bucket": "mvp-safeface.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:186779654097:android:07414d7cedf8f782c6f2f0",
+        "android_client_info": {
+          "package_name": "com.example.bank_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXtuOlHQoaFOQvofvpFCHDaCU0Nlu7wHU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
