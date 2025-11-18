@@ -1,12 +1,15 @@
-import 'package:bank_app/screens/face_recognition.dart';
 import 'package:bank_app/screens/login.dart';
+import 'package:bank_app/screens/register_face.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../model/user.dart';
 import '../widgets/create_user.dart';
 
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _RegisterScreenState createState() => _RegisterScreenState();
 }
 
@@ -85,7 +88,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => FaceRecognitionScreen(),
+        builder: (context) => RegisterFaceScreen(),
       ),
     );
   }
