@@ -1,8 +1,9 @@
 import 'package:bank_app/screens/face_recognition.dart';
-import 'package:bank_app/screens/home.dart';
 import 'package:bank_app/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../model/user.dart';
+import '../widgets/create_user.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -11,6 +12,83 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscureText = true;
+  bool _loading = false;
+  final _cpfCtrl = TextEditingController();
+  final _nameCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
+  final _pwCtrl = TextEditingController();
+  final _userController = UserController();
+
+  @override
+  void dispose() {
+    _cpfCtrl.dispose();
+    _nameCtrl.dispose();
+    _phoneCtrl.dispose();
+    _emailCtrl.dispose();
+    _pwCtrl.dispose();
+    super.dispose();
+  }
+
+  void _showSnack(String message, {Color background = Colors.redAccent}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.white, fontFamily: 'Poppins'),
+        ),
+        backgroundColor: background,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  Future<void> _handleRegister() async {
+    final cpf = _cpfCtrl.text.trim();
+    final name = _nameCtrl.text.trim();
+    final phone = _phoneCtrl.text.trim();
+    final email = _emailCtrl.text.trim();
+    final pw = _pwCtrl.text;
+
+    if ([cpf, name, phone, email, pw].any((text) => text.isEmpty)) {
+      _showSnack('Preencha todos os campos');
+      return;
+    }
+
+    setState(() => _loading = true);
+    final User? createdUser = await _userController.registerFromFields(
+      cpf: cpf,
+      name: name,
+      email: email,
+      phone: phone,
+      pw: pw,
+    );
+    setState(() => _loading = false);
+
+    if (!mounted) return;
+
+    if (createdUser == null) {
+      _showSnack('Erro ao cadastrar. Tente novamente.');
+      return;
+    }
+
+    _showSnack(
+      'Cadastro realizado com sucesso',
+      background: const Color.fromRGBO(0, 102, 255, 1),
+    );
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FaceRecognitionScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +148,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: 10),
                 TextField(
+                  controller: _cpfCtrl,
                   cursorColor: Colors.white,
                   keyboardType: TextInputType.text,
                   style: const TextStyle(
@@ -121,6 +200,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: 10),
                 TextField(
+                  controller: _nameCtrl,
                   keyboardType: TextInputType.text,
                   style: const TextStyle(
                     color: Colors.white,
@@ -170,6 +250,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: 10),
                 TextField(
+                  controller: _phoneCtrl,
                   cursorColor: Colors.white,
                   keyboardType: TextInputType.text,
                   style: const TextStyle(
@@ -221,6 +302,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: 10),
                 TextField(
+                  controller: _emailCtrl,
                   cursorColor: Colors.white,
                   keyboardType: TextInputType.text,
                   style: const TextStyle(
@@ -272,6 +354,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(height: 10),
                 TextField(
+                  controller: _pwCtrl,
                   cursorColor: Colors.white,
                   obscureText: _obscureText,
                   keyboardType: TextInputType.text,
@@ -337,23 +420,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                     ),
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => FaceRecognitionScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Cadastrar',
-                      style: TextStyle(
-                        fontFamily: 'Poppins',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Colors.white,
-                      ),
-                    ),
+                    onPressed: _loading ? null : _handleRegister,
+                    child: _loading
+                        ? const SizedBox(
+                            height: 18,
+                            width: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text(
+                            'Cadastrar',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
               ],
