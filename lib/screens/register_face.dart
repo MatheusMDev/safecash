@@ -49,7 +49,7 @@ class RegisterFaceScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => FaceRecognitionScreen()));
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RegisterFaceScreen()));
                 },
                 child: const Text(
                   'Cadastrar Face ID',

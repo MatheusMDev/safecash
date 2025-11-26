@@ -4,9 +4,10 @@ class User {
   String name;
   String email;
   String phone;
-  String? photoUrl;
+  //String? photoUrl;
   String pw;          
   DateTime createdAt;
+  List<double>? embedding;  // Alterado para List<double>
 
   User({
     this.id,
@@ -14,9 +15,10 @@ class User {
     required this.name,
     required this.email,
     required this.phone,
-    this.photoUrl,
+   // this.photoUrl,
     required this.pw,
     DateTime? createdAt,
+    this.embedding,
   }) : createdAt = createdAt ?? DateTime.now();
 
   // map -> model (ex.: ao ler do Firestore)
@@ -27,8 +29,7 @@ class User {
       createdAtParsed = created;
     } else {
       // tenta Timestamp do Firestore ou string
-      createdAtParsed = DateTime.tryParse(created?.toString() ?? '') ??
-          DateTime.now();
+      createdAtParsed = DateTime.tryParse(created?.toString() ?? '') ?? DateTime.now();
     }
 
     return User(
@@ -37,9 +38,13 @@ class User {
       name: (map['name'] ?? '').toString(),
       email: (map['email'] ?? '').toString(),
       phone: (map['phone'] ?? '').toString(),
-      photoUrl: map['photo_url']?.toString(),
+      //photoUrl: map['photo_url']?.toString(),
       pw: (map['pw'] ?? '').toString(),
       createdAt: createdAtParsed,
+      // Certifique-se de que 'embedding' seja convertido para List<double>
+      embedding: (map['embedding'] != null)
+          ? List<double>.from(map['embedding'])
+          : null,
     );
   }
 
@@ -50,9 +55,10 @@ class User {
       'name': name,
       'email': email,
       'phone': phone,
-      'photo_url': photoUrl,
+      //'photo_url': photoUrl,
       'pw': pw,
       'created_at': createdAt,
+      'embedding': embedding, // Salva a lista de embeddings
     };
   }
 
@@ -62,9 +68,10 @@ class User {
     String? name,
     String? email,
     String? phone,
-    String? photoUrl,
+    //String? photoUrl,
     String? pw,
     DateTime? createdAt,
+    List<double>? embedding,
   }) {
     return User(
       id: id ?? this.id,
@@ -72,9 +79,10 @@ class User {
       name: name ?? this.name,
       email: email ?? this.email,
       phone: phone ?? this.phone,
-      photoUrl: photoUrl ?? this.photoUrl,
+     // photoUrl: photoUrl ?? this.photoUrl,
       pw: pw ?? this.pw,
       createdAt: createdAt ?? this.createdAt,
+      embedding: embedding ?? this.embedding,
     );
   }
 

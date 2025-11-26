@@ -32,7 +32,7 @@ class UserController {
       email: email.trim(),
       phone: phone.trim(),
       pw: pw,
-      photoUrl: photoUrl,
+      //photoUrl: photoUrl,
     );
     return register(user);
   }
