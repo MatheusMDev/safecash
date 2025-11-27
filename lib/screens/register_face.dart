@@ -1,11 +1,13 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:bank_app/screens/face_recognition.dart';
+import 'package:bank_app/screens/register_face_recognition.dart';
 import 'package:bank_app/screens/register.dart';
 import 'package:flutter/material.dart';
 
 class RegisterFaceScreen extends StatelessWidget {
-  const RegisterFaceScreen({super.key});
+  const RegisterFaceScreen({super.key, this.cpf});
+
+  final String? cpf;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +51,14 @@ class RegisterFaceScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RegisterFaceScreen()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RegisterFaceScreenRecognition(
+                        cpf: cpf,
+                      ),
+                    ),
+                  );
                 },
                 child: const Text(
                   'Cadastrar Face ID',
@@ -74,7 +83,10 @@ class RegisterFaceScreen extends StatelessWidget {
                   ),
                 ),
                 onPressed: () {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegisterScreen()),
+                  );
                 },
                 child: const Text(
                   'Deixar para depois',
@@ -122,8 +134,8 @@ class FaceIDDesign extends StatelessWidget {
           ),
           child: Image.asset(
             "assets/images/face_id.png",
-            width: 30, 
-            height: 30, 
+            width: 30,
+            height: 30,
             fit: BoxFit.contain,
           ),
         ),
@@ -133,8 +145,7 @@ class FaceIDDesign extends StatelessWidget {
 }
 
 void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: RegisterFaceScreen(),
-  ));
+  runApp(
+    MaterialApp(debugShowCheckedModeBanner: false, home: RegisterFaceScreen()),
+  );
 }

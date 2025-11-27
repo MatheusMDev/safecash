@@ -7,7 +7,7 @@ class User {
   //String? photoUrl;
   String pw;          
   DateTime createdAt;
-  List<double>? embedding;  // Alterado para List<double>
+  List<String>? embedding;  // armazenamos base64 das fotos
 
   User({
     this.id,
@@ -41,9 +41,8 @@ class User {
       //photoUrl: map['photo_url']?.toString(),
       pw: (map['pw'] ?? '').toString(),
       createdAt: createdAtParsed,
-      // Certifique-se de que 'embedding' seja convertido para List<double>
       embedding: (map['embedding'] != null)
-          ? List<double>.from(map['embedding'])
+          ? List<String>.from(map['embedding'])
           : null,
     );
   }
@@ -58,7 +57,7 @@ class User {
       //'photo_url': photoUrl,
       'pw': pw,
       'created_at': createdAt,
-      'embedding': embedding, // Salva a lista de embeddings
+      'embedding': embedding, // Base64 das fotos
     };
   }
 
@@ -71,7 +70,7 @@ class User {
     //String? photoUrl,
     String? pw,
     DateTime? createdAt,
-    List<double>? embedding,
+    List<String>? embedding,
   }) {
     return User(
       id: id ?? this.id,

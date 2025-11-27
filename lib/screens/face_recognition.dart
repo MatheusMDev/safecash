@@ -9,8 +9,8 @@ class FaceRecognitionScreen extends StatefulWidget {
 }
 
 class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
-  late CameraController _cameraController;
-  late Future<void> _initializeControllerFuture;
+  CameraController? _cameraController;
+  Future<void>? _initializeControllerFuture;
   bool _isLoading = false;
 
   @override
@@ -21,10 +21,15 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
 
   void _initializeCamera() async {
     final cameras = await availableCameras();
+    if (cameras.isEmpty) return;
     final firstCamera = cameras.first;
-    _cameraController = CameraController(firstCamera, ResolutionPreset.high);
-    _initializeControllerFuture = _cameraController.initialize();
-    setState(() {});
+    final controller = CameraController(firstCamera, ResolutionPreset.high);
+    _initializeControllerFuture = controller.initialize();
+    await _initializeControllerFuture;
+    if (!mounted) return;
+    setState(() {
+      _cameraController = controller;
+    });
   }
 
   // Função para capturar a foto e verificar a face
@@ -32,9 +37,14 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
     try {
       setState(() => _isLoading = true);
 
+      final controller = _cameraController;
+      if (controller == null) {
+        throw Exception('Camera nao inicializada');
+      }
+
       await _initializeControllerFuture;
 
-      final image = await _cameraController.takePicture();
+      final image = await controller.takePicture();
 
       // Envie a imagem para a API para verificar se a face bate com o embedding
       // Aqui você pode chamar sua função de verificação de face
@@ -56,13 +66,14 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
 
   @override
   void dispose() {
-    _cameraController.dispose();
+    _cameraController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_cameraController.value.isInitialized) {
+    final controller = _cameraController;
+    if (controller == null || !controller.value.isInitialized) {
       return const Center(child: CircularProgressIndicator());
     }
 
@@ -73,7 +84,7 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
       body: Column(
         children: [
           Expanded(
-            child: CameraPreview(_cameraController),
+            child: CameraPreview(controller),
           ),
           if (_isLoading)
             const Center(child: CircularProgressIndicator())

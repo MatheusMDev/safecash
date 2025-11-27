@@ -24,7 +24,7 @@ class UserController {
     required String email,
     required String phone,
     required String pw,
-    String? photoUrl,
+    List<String>? embedding,
   }) {
     final user = User(
       cpf: cpf.trim(),
@@ -32,23 +32,63 @@ class UserController {
       email: email.trim(),
       phone: phone.trim(),
       pw: pw,
-      //photoUrl: photoUrl,
+      embedding: embedding,
     );
     return register(user);
+  }
+
+  /// Atualiza/guarda o embedding em um usuario ja cadastrado (opcional no fluxo).
+  /// Use quando ja tiver o ID do documento do usuario.
+  Future<User?> saveEmbeddingForUser({
+    required String userId,
+    required List<String> embedding,
+  }) async {
+    try {
+      final docRef = _db.collection(_collection).doc(userId);
+      await docRef.update({'embedding': embedding});
+      final snapshot = await docRef.get();
+      return User.fromMap(snapshot.data()!, id: snapshot.id);
+    } catch (e) {
+      print('Erro ao salvar embedding do usuario: $e');
+      return null;
+    }
+  }
+
+  /// Atalho para salvar embedding usando apenas o CPF (busca e atualiza).
+  Future<User?> saveEmbeddingByCpf({
+    required String cpf,
+    required List<String> embedding,
+  }) async {
+    try {
+      final query =
+          await _db.collection(_collection).where('cpf', isEqualTo: cpf).limit(1).get();
+      if (query.docs.isEmpty) {
+        print('Usuario nao encontrado para salvar embedding');
+        return null;
+      }
+      final docRef = query.docs.first.reference;
+      await docRef.update({'embedding': embedding});
+      final snapshot = await docRef.get();
+      return User.fromMap(snapshot.data()!, id: snapshot.id);
+    } catch (e) {
+      print('Erro ao salvar embedding por CPF: $e');
+      return null;
+    }
   }
 
   /// Faz login com CPF e senha (busca simples)
   Future<User?> login(String cpf, String pw) async {
     try {
-      final query = await _db
-          .collection(_collection)
-          .where('cpf', isEqualTo: cpf)
-          .where('pw', isEqualTo: pw)
-          .limit(1)
-          .get();
+      final query =
+          await _db
+              .collection(_collection)
+              .where('cpf', isEqualTo: cpf)
+              .where('pw', isEqualTo: pw)
+              .limit(1)
+              .get();
 
       if (query.docs.isEmpty) {
-        print('Usuario nao encontrado ou senha incorreta');
+        print('Usuario nao encontrado ou senha incorreta!');
         return null;
       }
 
