@@ -39,12 +39,8 @@ Future<bool> verifyIdToken(String idToken, String apiKey) async {
   // Faz a requisição POST com o idToken
   final response = await http.post(
     url,
-    body: json.encode({
-      'idToken': idToken,
-    }),
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    body: json.encode({'idToken': idToken}),
+    headers: {'Content-Type': 'application/json'},
   );
 
   if (response.statusCode == 200) {
@@ -58,5 +54,30 @@ Future<bool> verifyIdToken(String idToken, String apiKey) async {
   }
 }
 
+Future<bool> registerFace(String idToken, List<String> imageBase64) async {
+  final url = Uri.parse(
+    'http://localhost:8000/register-face',
+  ); // URL do servidor local
 
+  // Estrutura do corpo da requisição
+  final body = jsonEncode({'idToken': idToken, 'images_base64': imageBase64});
 
+  // Cabeçalhos da requisição
+  final headers = {'Content-Type': 'application/json'};
+
+  try {
+    // Realiza a requisição POST
+    final response = await http.post(url, headers: headers, body: body);
+
+    // Verifica se a resposta é bem-sucedida
+    if (response.statusCode == 200) {
+      return true; // Sucesso
+    } else {
+      print('Erro ao registrar face: ${response.statusCode}');
+      return false; // Falha na requisição
+    }
+  } catch (e) {
+    print('Erro na requisição: $e');
+    return false; // Erro no processo de requisição
+  }
+}
