@@ -12,8 +12,6 @@ flutter_*.png
 *.js.map
 *.dill
 *.tmp
-.flutter-plugins-dependencies
-.flutter-plugins
 
 
 # Logs
