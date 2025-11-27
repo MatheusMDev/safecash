@@ -64,7 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final apiKey = 'AIzaSyCHDutXuKV_39WzRs9dvt0VN79iREvIjnI'; // Sua chave de API do Firebase
 
     // Verifica o idToken antes de continuar com o login
-    bool isTokenValid = await verifyIdToken(idToken, apiKey);
+    bool isTokenValid = await verifyIdToken(idToken!, apiKey);
 
     if (!isTokenValid) {
       setState(() => _loading = false);
