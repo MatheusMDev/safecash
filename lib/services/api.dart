@@ -4,7 +4,7 @@ import 'dart:convert';
 // Função para pegar idtoken
 Future<String?> captureIDToken(String email, String password) async {
   // URL do Firebase Authentication para autenticar com email e senha
-  final url = Uri.parse('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDXMaZaGsPa3ajobec1c9FK0G-yCqSTMDE');
+  final url = Uri.parse('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCHDutXuKV_39WzRs9dvt0VN79iREvIjnI');
 
   // Requisição POST para autenticar com o email e senha
   final response = await http.post(
@@ -31,29 +31,31 @@ Future<String?> captureIDToken(String email, String password) async {
 }
 
 Future<bool> registerFace(String idToken, List<String> imageBase64) async {
-  final url = Uri.parse(
-    'http://localhost:8000/register-face',
-  ); // URL do servidor local
+  final url = Uri.parse('http://localhost:8000/register-face');
 
-  // Estrutura do corpo da requisição
-  final body = jsonEncode({'idToken': idToken, 'images_base64': imageBase64});
+  final body = jsonEncode({
+    'idToken': idToken,
+    'images_base64': imageBase64,
+  });
 
-  // Cabeçalhos da requisição
   final headers = {'Content-Type': 'application/json'};
 
   try {
-    // Realiza a requisição POST
+    print('➡️ Enviando para /register-face: $body');
+
     final response = await http.post(url, headers: headers, body: body);
 
-    // Verifica se a resposta é bem-sucedida
+    print('⬅️ Resposta /register-face: '
+        '${response.statusCode} | ${response.body}');
+
     if (response.statusCode == 200) {
-      return true; // Sucesso
+      return true;
     } else {
       print('Erro ao registrar face: ${response.statusCode}');
-      return false; // Falha na requisição
+      return false;
     }
   } catch (e) {
     print('Erro na requisição: $e');
-    return false; // Erro no processo de requisição
+    return false;
   }
 }

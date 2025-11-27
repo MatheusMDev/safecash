@@ -72,7 +72,7 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
       final idToken = await captureIDToken(email, password);
 
       if (idToken == null) {
-        print("Erro ao obter idToken (login falhou)");
+        print("Erro ao obter idToken");
         return;
       }
 
