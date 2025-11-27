@@ -3,6 +3,7 @@ import 'package:bank_app/screens/information.dart';
 import 'package:bank_app/screens/register.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:bank_app/services/api.dart';
 
 // >>> ADICIONE:
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -57,6 +58,35 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     setState(() => _loading = true);
+
+    // Chama a função de verificação do idToken aqui
+    final idToken = await getIdToken(); // Adapte para pegar o idToken corretamente
+    final apiKey = 'AIzaSyCHDutXuKV_39WzRs9dvt0VN79iREvIjnI'; // Sua chave de API do Firebase
+
+    // Verifica o idToken antes de continuar com o login
+    bool isTokenValid = await verifyIdToken(idToken, apiKey);
+
+    if (!isTokenValid) {
+      setState(() => _loading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'ID Token inválido',
+            style: TextStyle(color: Colors.white, fontFamily: 'Poppins'),
+          ),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
+
+    // Agora, continue com o login no Firestore
     final user = await _userController.login(cpf, pw);
     setState(() => _loading = false);
 
@@ -81,11 +111,11 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    // Sucesso: navega para a tela de face (pode passar o user se quiser)
+    // Sucesso: navega para a tela de face
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => FaceRecognitionScreen(/* user: user */),
+        builder: (_) => FaceRecognitionScreen(),
       ),
     );
   }
@@ -305,7 +335,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => RegisterScreen()),
+                          MaterialPageRoute(builder: (context) => RegisterScreen()),
                         );
                       },
                       child: const Text(
