@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:bank_app/screens/face_recognition.dart';
 import 'package:bank_app/widgets/create_user.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:bank_app/services/api.dart'; // Importar a função de API
 
 class RegisterFaceScreenRecognition extends StatefulWidget {
   const RegisterFaceScreenRecognition({super.key, this.cpf});
@@ -17,11 +17,12 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
   late CameraController _cameraController;
   late Future<void> _initializeControllerFuture;
   bool _isLoading = false;
-  bool _isCameraReady =
-      false; // Estado para verificar se a camera foi inicializada
-  bool _isCaptured = false; // Controla o estado de expansao do oval (captura)
+  bool _isCameraReady = false;
+  bool _isCaptured = false;
+  // ignore: unused_field
   final UserController _userController = UserController();
   final List<String> _capturedImages = [];
+  String? _idToken; // Variável para armazenar o idToken do login
 
   @override
   void initState() {
@@ -29,7 +30,6 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
     _checkCameraPermission();
   }
 
-  // Verificar se a permissao da camera foi concedida
   void _checkCameraPermission() async {
     final cameras = await availableCameras();
     if (cameras.isNotEmpty) {
@@ -37,61 +37,52 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
     }
   }
 
-  // Inicializa a camera
   void _initializeCamera() async {
     try {
       final cameras = await availableCameras();
       final firstCamera = cameras.first;
       _cameraController = CameraController(firstCamera, ResolutionPreset.high);
       _initializeControllerFuture = _cameraController.initialize();
-      await _initializeControllerFuture; // Aguardar a inicializacao da camera
+      await _initializeControllerFuture;
       setState(() {
-        _isCameraReady =
-            true; // Atualiza o estado para indicar que a camera esta pronta
+        _isCameraReady = true;
       });
     } catch (e) {
       print("Erro ao inicializar a camera: $e");
     }
   }
 
-  // Funcao para capturar a foto
+  // Função para capturar a foto e enviar para a API
   void _capturePhoto() async {
-    if (_isLoading) return; // evita duplo clique/reload
+    if (_isLoading) return;
 
     try {
       setState(() {
-        _isCaptured = true; // Aumenta o tamanho do oval
+        _isCaptured = true;
         _isLoading = true;
       });
 
-      // Aguarda a inicializacao da camera
       await _initializeControllerFuture;
 
-      // Captura a imagem
       final image = await _cameraController.takePicture();
 
       // Converte a imagem para Base64
       final imageBytes = await image.readAsBytes();
       final imageBase64 = base64Encode(imageBytes);
-
-      // Acumula base64 para permitir mais de uma captura
+      
+      // Adiciona a imagem Base64 à lista
       _capturedImages.add(imageBase64);
 
-      // Salva o embedding (base64) no usuario pelo CPF, se informado
-      if ((widget.cpf ?? '').isNotEmpty) {
-        final updatedUser = await _userController.saveEmbeddingByCpf(
-          cpf: widget.cpf!.trim(),
-          embedding: _capturedImages,
-        );
-        if (updatedUser == null) {
-          print('Falha ao salvar embedding no Firestore.');
+      // Verifica se o idToken está disponível (deve ser salvo após o login)
+      if (_idToken != null) {
+        final success = await registerFace(_idToken!, _capturedImages);
+        if (success) {
+          print('Face registrada com sucesso!');
         } else {
-          print(
-            'Embedding salvo (${_capturedImages.length} captura[s]) para CPF ${updatedUser.cpf}',
-          );
+          print('Falha ao registrar a face.');
         }
       } else {
-        print('CPF nao informado; embedding nao salvo.');
+        print('Erro: idToken não encontrado!');
       }
     } catch (e) {
       setState(() {

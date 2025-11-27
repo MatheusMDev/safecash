@@ -4,11 +4,8 @@ import 'package:bank_app/screens/register.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bank_app/services/api.dart';
-
-// >>> ADICIONE:
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/create_user.dart';
-import '../model/user.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

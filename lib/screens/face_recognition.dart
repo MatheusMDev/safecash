@@ -44,6 +44,7 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
 
       await _initializeControllerFuture;
 
+      // ignore: unused_local_variable
       final image = await controller.takePicture();
 
       // Envie a imagem para a API para verificar se a face bate com o embedding

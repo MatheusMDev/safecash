@@ -1,6 +1,5 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart';
 
 // Função para realizar o login com email e senha
 Future<String?> loginWithEmailAndPassword(String email, String password) async {
