@@ -1,14 +1,15 @@
-import 'package:flutter/material.dart';
+import 'package:bank_app/screens/face_recognition.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
 
-class FaceRecognitionScreen extends StatefulWidget {
-  const FaceRecognitionScreen({super.key});
+class RegisterFaceScreen extends StatefulWidget {
+  const RegisterFaceScreen({super.key});
 
   @override
-  _FaceRecognitionScreenState createState() => _FaceRecognitionScreenState();
+  _RegisterFaceScreenState createState() => _RegisterFaceScreenState();
 }
 
-class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
+class _RegisterFaceScreenState extends State<RegisterFaceScreen> {
   late CameraController _cameraController;
   late Future<void> _initializeControllerFuture;
   bool _isLoading = false;
@@ -19,6 +20,7 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
     _initializeCamera();
   }
 
+  // Inicializa a câmera
   void _initializeCamera() async {
     final cameras = await availableCameras();
     final firstCamera = cameras.first;
@@ -27,27 +29,29 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
     setState(() {});
   }
 
-  // Função para capturar a foto e verificar a face
-  void _captureAndVerifyFace() async {
+  // Função para capturar a foto
+  void _capturePhoto() async {
     try {
       setState(() => _isLoading = true);
 
+      // Aguarda a inicialização da câmera
       await _initializeControllerFuture;
 
+      // Captura a imagem
       final image = await _cameraController.takePicture();
 
-      // Envie a imagem para a API para verificar se a face bate com o embedding
-      // Aqui você pode chamar sua função de verificação de face
+      // Enviar a imagem para a API (para registrar o embedding)
+      // Você pode enviar a imagem para o backend da API para gerar o embedding e salvar no Firestore
+      // Aqui você chamaria sua função para enviar para o backend
+
       // Exemplo de código fictício:
-      // final result = await API.verifyFace(image.path);
+      // await API.registerFace(image.path);
 
-      // Navegar para a próxima tela dependendo do resultado da verificação
-      // if (result.success) {
-      //   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => NextScreen()));
-      // } else {
-      //   _showSnack('Verificação falhou', background: Colors.redAccent);
-      // }
-
+      // Após o registro, navega para a tela de login ou próximo fluxo
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => FaceRecognitionScreen()),
+      );
     } catch (e) {
       setState(() => _isLoading = false);
       print('Erro ao capturar a foto: $e');
@@ -68,7 +72,7 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reconhecimento Facial'),
+        title: const Text('Registrar Face'),
       ),
       body: Column(
         children: [
@@ -79,8 +83,8 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
             const Center(child: CircularProgressIndicator())
           else
             ElevatedButton(
-              onPressed: _captureAndVerifyFace,
-              child: const Text('Capturar e Verificar Face'),
+              onPressed: _capturePhoto,
+              child: const Text('Capturar Foto'),
             ),
         ],
       ),

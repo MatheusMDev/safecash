@@ -3,6 +3,7 @@ import 'package:bank_app/screens/information.dart';
 import 'package:bank_app/screens/register.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:bank_app/services/api.dart';
 
 // >>> ADICIONE:
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -57,6 +58,19 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     setState(() => _loading = true);
+
+    // Chama a função de verificação do idToken aqui
+    String email = "tete@tete.com";  // Email do usuário
+    String password = "123456";  // Senha do usuário
+
+    String? idToken = await loginWithEmailAndPassword(email, password);
+    if (idToken != null) {
+        print("Login bem-sucedido! idToken: $idToken");
+    } else {
+        print("Erro no login");
+    }
+
+    // Agora, continue com o login no Firestore
     final user = await _userController.login(cpf, pw);
     setState(() => _loading = false);
 
@@ -81,11 +95,11 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    // Sucesso: navega para a tela de face (pode passar o user se quiser)
+    // Sucesso: navega para a tela de face
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => FaceRecognitionScreen(/* user: user */),
+        builder: (_) => FaceRecognitionScreen(),
       ),
     );
   }
@@ -305,7 +319,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => RegisterScreen()),
+                          MaterialPageRoute(builder: (context) => RegisterScreen()),
                         );
                       },
                       child: const Text(
