@@ -60,30 +60,14 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _loading = true);
 
     // Chama a função de verificação do idToken aqui
-    final idToken = await getIdToken(); // Adapte para pegar o idToken corretamente
-    final apiKey = 'AIzaSyCHDutXuKV_39WzRs9dvt0VN79iREvIjnI'; // Sua chave de API do Firebase
+    String email = "tete@tete.com";  // Email do usuário
+    String password = "123456";  // Senha do usuário
 
-    // Verifica o idToken antes de continuar com o login
-    bool isTokenValid = await verifyIdToken(idToken!, apiKey);
-
-    if (!isTokenValid) {
-      setState(() => _loading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'ID Token inválido',
-            style: TextStyle(color: Colors.white, fontFamily: 'Poppins'),
-          ),
-          backgroundColor: Colors.redAccent,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          duration: const Duration(seconds: 3),
-        ),
-      );
-      return;
+    String? idToken = await loginWithEmailAndPassword(email, password);
+    if (idToken != null) {
+        print("Login bem-sucedido! idToken: $idToken");
+    } else {
+        print("Erro no login");
     }
 
     // Agora, continue com o login no Firestore

@@ -12,6 +12,9 @@ flutter_*.png
 *.js.map
 *.dill
 *.tmp
+.flutter-plugins-dependencies
+.flutter-plugins
+
 
 # Logs
 *.log
@@ -52,6 +55,7 @@ macos/Pods/
 macos/Flutter/ephemeral/
 macos/build/
 
+
 # Xcode
 *.xcuserstate
 *.xcworkspace
@@ -66,6 +70,9 @@ DerivedData/
 # ==============================================
 windows/flutter/ephemeral/
 windows/build/
+windows/.flutter-plugins-dependencies
+windows/.flutter-plugins
+
 
 # ==============================================
 # WEB
