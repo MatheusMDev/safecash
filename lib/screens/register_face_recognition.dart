@@ -25,6 +25,19 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
   // ignore: unused_field
   final UserController _userController = UserController();
   final List<String> _capturedImages = [];
+  static const int _photosNeeded = 2;
+
+  int get _remainingPhotos {
+    final remaining = _photosNeeded - _capturedImages.length;
+    return remaining > 0 ? remaining : 0;
+  }
+
+  int get _nextPhotoNumber {
+    final next = _capturedImages.length + 1;
+    return next > _photosNeeded ? _photosNeeded : next;
+  }
+
+  bool get _hasRequiredPhotos => _capturedImages.length >= _photosNeeded;
 
   @override
   void initState() {
@@ -58,15 +71,42 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
   void _capturePhoto() async {
     if (_isLoading) return;
 
-    try {
-      setState(() {
-        _isCaptured = true;
-        _isLoading = true;
-      });
+    setState(() {
+      _isCaptured = true;
+      _isLoading = true;
+    });
 
+    try {
       await _initializeControllerFuture;
 
-      const email = "tete@tete.com";
+      // 2) Captura a imagem
+      final image = await _cameraController.takePicture();
+
+      // Converte a imagem para Base64
+      final imageBytes = await image.readAsBytes();
+      final imageBase64 = base64Encode(imageBytes);
+
+      // Adiciona a imagem Base64 à lista (caso queira capturar mais vezes)
+      setState(() {
+        _capturedImages.add(imageBase64);
+        if (_capturedImages.length > _photosNeeded) {
+          _capturedImages.removeAt(0);
+        }
+      });
+
+      if (!_hasRequiredPhotos) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Falta capturar mais $_remainingPhotos foto(s).'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+        return;
+      }
+
+      const email = "teste@teste.com";
       const password = "123456";
 
       final idToken = await captureIDToken(email, password);
@@ -78,18 +118,10 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
 
       print("idToken obtido: $idToken");
 
-      // 2) Captura a imagem
-      final image = await _cameraController.takePicture();
-
-      // Converte a imagem para Base64
-      final imageBytes = await image.readAsBytes();
-      final imageBase64 = base64Encode(imageBytes);
-
-      // Adiciona a imagem Base64 à lista (caso queira capturar mais vezes)
-      _capturedImages.add(imageBase64);
+      final imagesToSend = _capturedImages.take(_photosNeeded).toList();
 
       // 3) Chama a API FastAPI /register-face com o idToken e as imagens
-      final success = await registerFace(idToken, _capturedImages);
+      final success = await registerFace(idToken, imagesToSend);
 
       if (success) {
         Navigator.pushReplacement(
@@ -164,7 +196,7 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
                         width: 200,
                         height: 60,
                         child: ElevatedButton(
-                          onPressed: _capturePhoto,
+                          onPressed: _isLoading ? null : _capturePhoto,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color.fromRGBO(
                               0,
@@ -176,9 +208,9 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                          child: const Text(
-                            'Prosseguir',
-                            style: TextStyle(
+                          child: Text(
+                            'Capturar foto $_nextPhotoNumber/$_photosNeeded',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
