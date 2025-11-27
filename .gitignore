@@ -68,8 +68,6 @@ DerivedData/
 # ==============================================
 windows/flutter/ephemeral/
 windows/build/
-windows/.flutter-plugins-dependencies
-windows/.flutter-plugins
 
 
 # ==============================================
