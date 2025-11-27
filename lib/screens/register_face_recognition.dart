@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'package:bank_app/screens/register_face_recognition_fail.dart';
+import 'package:bank_app/screens/register_face_recognition_sucess.dart';
 import 'package:bank_app/widgets/create_user.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:bank_app/services/api.dart'; // Importar a função de API
+import 'package:bank_app/services/api.dart';
 
 class RegisterFaceScreenRecognition extends StatefulWidget {
   const RegisterFaceScreenRecognition({super.key, this.cpf});
@@ -19,10 +21,10 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
   bool _isLoading = false;
   bool _isCameraReady = false;
   bool _isCaptured = false;
+
   // ignore: unused_field
   final UserController _userController = UserController();
   final List<String> _capturedImages = [];
-  String? _idToken; // Variável para armazenar o idToken do login
 
   @override
   void initState() {
@@ -64,30 +66,45 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
 
       await _initializeControllerFuture;
 
+      const email = "tete@tete.com";
+      const password = "123456";
+
+      final idToken = await captureIDToken(email, password);
+
+      if (idToken == null) {
+        print("Erro ao obter idToken (login falhou)");
+        return;
+      }
+
+      print("idToken obtido: $idToken");
+
+      // 2) Captura a imagem
       final image = await _cameraController.takePicture();
 
       // Converte a imagem para Base64
       final imageBytes = await image.readAsBytes();
       final imageBase64 = base64Encode(imageBytes);
-      
-      // Adiciona a imagem Base64 à lista
+
+      // Adiciona a imagem Base64 à lista (caso queira capturar mais vezes)
       _capturedImages.add(imageBase64);
 
-      // Verifica se o idToken está disponível (deve ser salvo após o login)
-      if (_idToken != null) {
-        final success = await registerFace(_idToken!, _capturedImages);
-        if (success) {
-          print('Face registrada com sucesso!');
-        } else {
-          print('Falha ao registrar a face.');
-        }
+      // 3) Chama a API FastAPI /register-face com o idToken e as imagens
+      final success = await registerFace(idToken, _capturedImages);
+
+      if (success) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const FaceRecognitionScreenSucess(),
+          ),
+        );
       } else {
-        print('Erro: idToken não encontrado!');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const FaceRecognitionScreenFail()),
+        );
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
       print('Erro ao capturar a foto: $e');
     } finally {
       if (mounted) {

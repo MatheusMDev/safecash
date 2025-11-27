@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
     String email = "tete@tete.com";  // Email do usuário
     String password = "123456";  // Senha do usuário
 
-    String? idToken = await loginWithEmailAndPassword(email, password);
+    String? idToken = await captureIDToken(email, password);
     if (idToken != null) {
         print("Login bem-sucedido! idToken: $idToken");
     } else {
