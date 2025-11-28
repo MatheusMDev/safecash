@@ -38,6 +38,7 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
     final next = _capturedImages.length + 1;
     return next > _photosNeeded ? _photosNeeded : next;
   }
+  bool get _hasRequiredPhotos => _capturedImages.length >= _photosNeeded;
 
   @override
   void initState() {
@@ -119,6 +120,18 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
           _capturedImages.removeAt(0);
         }
       });
+
+      if (!_hasRequiredPhotos) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Falta capturar mais $_remainingPhotos foto(s).'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+        return;
+      }
 
       const email = "teste@teste.com";
       const password = "123456";
