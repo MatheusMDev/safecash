@@ -16,10 +16,10 @@ class PixFaceRecognitionScreen extends StatefulWidget {
   final String? uid;
 
   @override
-  _FaceRecognitionScreenState createState() => _FaceRecognitionScreenState();
+  _PixFaceRecognitionState createState() => _PixFaceRecognitionState();
 }
 
-class _FaceRecognitionScreenState extends State<PixFaceRecognitionScreen> {
+class _PixFaceRecognitionState extends State<PixFaceRecognitionScreen> {
   late CameraController _cameraController;
   late Future<void> _initializeControllerFuture;
   bool _isLoading = false;
