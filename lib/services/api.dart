@@ -68,3 +68,28 @@ Future<bool> registerFace(
     return false;
   }
 }
+
+// Função para enviar a imagem para a API de verificação
+Future<bool> verifyFace(String idToken, String imageBase64) async {
+  final String apiUrl = 'http://localhost:8000/verify-face'; // Altere para seu endpoint
+
+  final response = await http.post(
+    Uri.parse(apiUrl),
+    headers: <String, String>{
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode({
+      'idToken': idToken, // Passando o idToken
+      'image': imageBase64,  // Envia a imagem em Base64
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    if (data['status'] == 'success' && data['verified'] == true) {
+      return true; // Face verificada com sucesso
+    }
+  }
+
+  return false; // Falha na verificação ou erro na resposta
+}

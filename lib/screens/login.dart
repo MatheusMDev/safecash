@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (idToken != null) {
       print("Login bem-sucedido! idToken: $idToken");
     } else {
-      print("Erro no login");
+        print("Erro no login, IdToken");
     }
 
     // Agora, continue com o login no Firestore
