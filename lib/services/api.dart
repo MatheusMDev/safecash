@@ -69,27 +69,26 @@ Future<bool> registerFace(
   }
 }
 
-// Função para enviar a imagem para a API de verificação
-Future<bool> verifyFace(String idToken, String imageBase64) async {
-  final String apiUrl = 'http://localhost:8000/verify-face'; // Altere para seu endpoint
-
-  final response = await http.post(
-    Uri.parse(apiUrl),
-    headers: <String, String>{
-      'Content-Type': 'application/json',
-    },
+Future<bool> verifyFace({
+  required String uid,          //  agora obrigatório
+  required String idToken,      //  técnico
+  required String imageBase64,
+}) async {
+  final resp = await http.post(
+    Uri.parse('http://localhost:8000/verify-face'),
+    headers: {'Content-Type': 'application/json'},
     body: jsonEncode({
-      'idToken': idToken, // Passando o idToken
-      'image': imageBase64,  // Envia a imagem em Base64
+      'uid': uid,               //  esse manda qual usuário da collection "user"
+      'idToken': idToken,       //  token do user técnico
+      'image_base64': imageBase64,
     }),
   );
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    if (data['status'] == 'success' && data['verified'] == true) {
-      return true; // Face verificada com sucesso
-    }
-  }
+  print('⬅️ Resposta /verify-face: ${resp.statusCode} | ${resp.body}');
 
-  return false; // Falha na verificação ou erro na resposta
+  if (resp.statusCode == 200) {
+    final data = jsonDecode(resp.body);
+    return data['passed'] == true;
+  }
+  return false;
 }
