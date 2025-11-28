@@ -85,10 +85,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
       background: const Color.fromRGBO(0, 102, 255, 1),
     );
 
+    String? userId = createdUser.id;
+    if (userId == null) {
+      // Busca rapida pelo CPF para garantir o UID apos cadastro
+      final fetchedByCpf = await _userController.fetchByCpf(cpf);
+      userId = fetchedByCpf?.id;
+    }
+
+    if (userId == null) {
+      _showSnack('UID do usuario nao encontrado apos cadastro.');
+      return;
+    }
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => RegisterFaceScreen(cpf: cpf),
+        builder: (context) => RegisterFaceScreen(cpf: cpf, uid: userId),
       ),
     );
   }

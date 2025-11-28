@@ -7,9 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:bank_app/services/api.dart';
 
 class RegisterFaceScreenRecognition extends StatefulWidget {
-  const RegisterFaceScreenRecognition({super.key, this.cpf});
+  const RegisterFaceScreenRecognition({super.key, this.cpf, this.uid});
 
   final String? cpf;
+  final String? uid;
 
   @override
   _RegisterFaceScreenState createState() => _RegisterFaceScreenState();
@@ -26,6 +27,7 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
   final UserController _userController = UserController();
   final List<String> _capturedImages = [];
   static const int _photosNeeded = 2;
+  String? _resolvedUid;
 
   int get _remainingPhotos {
     final remaining = _photosNeeded - _capturedImages.length;
@@ -37,12 +39,36 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
     return next > _photosNeeded ? _photosNeeded : next;
   }
 
-  bool get _hasRequiredPhotos => _capturedImages.length >= _photosNeeded;
-
   @override
   void initState() {
     super.initState();
+    _resolvedUid = widget.uid;
+    // Tenta resolver o UID logo ao iniciar, caso venha apenas o CPF
+    _ensureUid();
     _checkCameraPermission();
+  }
+
+  Future<String?> _ensureUid() async {
+    if (_resolvedUid != null && _resolvedUid!.isNotEmpty) return _resolvedUid;
+
+    final cpf = widget.cpf;
+    if (cpf == null || cpf.isEmpty) return null;
+
+    try {
+      final user = await _userController.fetchByCpf(cpf);
+      final uid = user?.id;
+      if (uid != null && uid.isNotEmpty && mounted) {
+        setState(() {
+          _resolvedUid = uid;
+        });
+      } else {
+        _resolvedUid = uid;
+      }
+      return uid;
+    } catch (e) {
+      print('Erro ao buscar UID por CPF: $e');
+      return null;
+    }
   }
 
   void _checkCameraPermission() async {
@@ -94,18 +120,6 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
         }
       });
 
-      if (!_hasRequiredPhotos) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Falta capturar mais $_remainingPhotos foto(s).'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
-        return;
-      }
-
       const email = "teste@teste.com";
       const password = "123456";
 
@@ -116,12 +130,23 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
         return;
       }
 
+      final uid = await _ensureUid();
+      if (uid == null || uid.isEmpty) {
+        print("UID ausente. Nao foi possivel enviar para a API.");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('UID do usuario nao encontrado.')),
+          );
+        }
+        return;
+      }
+
       print("idToken obtido: $idToken");
 
       final imagesToSend = _capturedImages.take(_photosNeeded).toList();
 
       // 3) Chama a API FastAPI /register-face com o idToken e as imagens
-      final success = await registerFace(idToken, imagesToSend);
+      final success = await registerFace(uid, idToken, imagesToSend);
 
       if (success) {
         Navigator.pushReplacement(

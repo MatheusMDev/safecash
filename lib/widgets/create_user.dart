@@ -76,6 +76,22 @@ class UserController {
     }
   }
 
+  /// Busca um usuario pelo CPF e retorna o modelo com o id do documento.
+  Future<User?> fetchByCpf(String cpf) async {
+    try {
+      final query =
+          await _db.collection(_collection).where('cpf', isEqualTo: cpf.trim()).limit(1).get();
+      if (query.docs.isEmpty) {
+        return null;
+      }
+      final doc = query.docs.first;
+      return User.fromMap(doc.data(), id: doc.id);
+    } catch (e) {
+      print('Erro ao buscar usuario por CPF: $e');
+      return null;
+    }
+  }
+
   /// Faz login com CPF e senha (busca simples)
   Future<User?> login(String cpf, String pw) async {
     try {

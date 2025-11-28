@@ -6,7 +6,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bank_app/services/api.dart';
 import '../widgets/create_user.dart';
 
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -57,14 +56,14 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _loading = true);
 
     // Chama a função de verificação do idToken aqui
-    String email = "tete@tete.com";  // Email do usuário
-    String password = "123456";  // Senha do usuário
+    String email = "teste@teste.com"; // Email do usuário
+    String password = "123456"; // Senha do usuário
 
     String? idToken = await captureIDToken(email, password);
     if (idToken != null) {
-        print("Login bem-sucedido! idToken: $idToken");
+      print("Login bem-sucedido! idToken: $idToken");
     } else {
-        print("Erro no login");
+      print("Erro no login");
     }
 
     // Agora, continue com o login no Firestore
@@ -95,9 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // Sucesso: navega para a tela de face
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (_) => FaceRecognitionScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => FaceRecognitionScreen()),
     );
   }
 
@@ -316,7 +313,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => RegisterScreen()),
+                          MaterialPageRoute(
+                            builder: (context) => RegisterScreen(),
+                          ),
                         );
                       },
                       child: const Text(
