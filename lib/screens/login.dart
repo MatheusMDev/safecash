@@ -57,14 +57,14 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _loading = true);
 
     // Chama a função de verificação do idToken aqui
-    String email = "tete@tete.com";  // Email do usuário
+    String email = "teste@teste.com";  // Email do usuário
     String password = "123456";  // Senha do usuário
 
     String? idToken = await captureIDToken(email, password);
     if (idToken != null) {
         print("Login bem-sucedido! idToken: $idToken");
     } else {
-        print("Erro no login");
+        print("Erro no login, IdToken");
     }
 
     // Agora, continue com o login no Firestore
