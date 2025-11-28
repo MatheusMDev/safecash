@@ -1,18 +1,18 @@
 import 'package:bank_app/screens/home.dart';
-import 'package:bank_app/screens/login.dart';
 import 'package:flutter/material.dart';
 
 import 'dart:async';
 
-class FaceRecognitionFail extends StatefulWidget {
-  const FaceRecognitionFail({super.key});
+class PixFaceRecognitionSucess extends StatefulWidget {
+  const PixFaceRecognitionSucess({super.key});
 
   @override
-  State<FaceRecognitionFail> createState() =>
-      _FaceRecognitionFailState();
+  State<PixFaceRecognitionSucess> createState() =>
+      _PixFaceRecognitionScreenSucessState();
 }
 
-class _FaceRecognitionFailState extends State<FaceRecognitionFail> {
+class _PixFaceRecognitionScreenSucessState
+    extends State<PixFaceRecognitionSucess> {
   @override
   void initState() {
     super.initState();
@@ -20,7 +20,7 @@ class _FaceRecognitionFailState extends State<FaceRecognitionFail> {
       if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
       );
     });
   }
@@ -33,11 +33,11 @@ class _FaceRecognitionFailState extends State<FaceRecognitionFail> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            FaceRecognitionSuces(),
+            PixFaceRecognitionSuces(),
             const SizedBox(height: 20),
             // Texto abaixo do ícone
             const Text(
-              'Essa tentativa foi considerada um Deepfake!\nUm alerta foi enviado à instituição!',
+              'Pix enviado com sucesso!\nVocê será redirecionado em segundos...',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',
@@ -53,8 +53,8 @@ class _FaceRecognitionFailState extends State<FaceRecognitionFail> {
   }
 }
 
-class FaceRecognitionSuces extends StatelessWidget {
-  const FaceRecognitionSuces({super.key});
+class PixFaceRecognitionSuces extends StatelessWidget {
+  const PixFaceRecognitionSuces({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -69,12 +69,7 @@ class FaceRecognitionSuces extends StatelessWidget {
             height: 80.0 + (i * 60),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: const Color.fromARGB(
-                255,
-                240,
-                105,
-                105,
-              ).withOpacity(0.05 * (4 - i)),
+              color: Colors.greenAccent.withOpacity(0.05 * (4 - i)),
             ),
           ),
         Container(
@@ -82,9 +77,9 @@ class FaceRecognitionSuces extends StatelessWidget {
           height: 80,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: const Color.fromARGB(255, 240, 105, 105).withOpacity(0.2),
+            color: Colors.greenAccent.withOpacity(0.2),
           ),
-          child: Icon(Icons.close, color: Colors.white, size: 40),
+          child: Icon(Icons.check, color: Colors.white, size: 40),
         ),
       ],
     );

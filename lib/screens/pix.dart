@@ -1,3 +1,4 @@
+import 'package:bank_app/screens/pix_face_recognition.dart';
 import 'package:flutter/material.dart';
 import 'maintenance.dart';
 
@@ -223,8 +224,8 @@ class _PixScreenState extends State<PixScreen> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
-        onPressed: () {
-          // Lógica de envio aqui
+        onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const PixFaceRecognitionScreen(),));
+          
         },
         child: Text("Enviar",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),

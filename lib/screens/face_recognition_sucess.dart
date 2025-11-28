@@ -8,10 +8,10 @@ class FaceRecognitionSucess extends StatefulWidget {
 
   @override
   State<FaceRecognitionSucess> createState() =>
-      _FaceRecognitionScreenSucessState();
+      _FaceRecognitionSucessState();
 }
 
-class _FaceRecognitionScreenSucessState
+class _FaceRecognitionSucessState
     extends State<FaceRecognitionSucess> {
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _FaceRecognitionScreenSucessState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            FaceRecognitionScreenSuces(),
+            FaceRecognitionSuces(),
             const SizedBox(height: 20),
             // Texto abaixo do ícone
             const Text(
@@ -53,8 +53,8 @@ class _FaceRecognitionScreenSucessState
   }
 }
 
-class FaceRecognitionScreenSuces extends StatelessWidget {
-  const FaceRecognitionScreenSuces({super.key});
+class FaceRecognitionSuces extends StatelessWidget {
+  const FaceRecognitionSuces({super.key});
 
   @override
   Widget build(BuildContext context) {

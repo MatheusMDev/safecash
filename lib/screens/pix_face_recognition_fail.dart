@@ -4,15 +4,15 @@ import 'package:flutter/material.dart';
 
 import 'dart:async';
 
-class FaceRecognitionFail extends StatefulWidget {
-  const FaceRecognitionFail({super.key});
+class PixFaceRecognitionFail extends StatefulWidget {
+  const PixFaceRecognitionFail({super.key});
 
   @override
-  State<FaceRecognitionFail> createState() =>
-      _FaceRecognitionFailState();
+  State<PixFaceRecognitionFail> createState() =>
+      _PixFaceRecognitionFailState();
 }
 
-class _FaceRecognitionFailState extends State<FaceRecognitionFail> {
+class _PixFaceRecognitionFailState extends State<PixFaceRecognitionFail> {
   @override
   void initState() {
     super.initState();
@@ -37,7 +37,7 @@ class _FaceRecognitionFailState extends State<FaceRecognitionFail> {
             const SizedBox(height: 20),
             // Texto abaixo do ícone
             const Text(
-              'Essa tentativa foi considerada um Deepfake!\nUm alerta foi enviado à instituição!',
+              'Essa tentativa foi considerada um Deepfake!\nPix não enviado!\nUm alerta foi enviado à instituição!',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'Poppins',

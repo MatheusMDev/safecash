@@ -1,3 +1,4 @@
+import 'package:bank_app/screens/home.dart';
 import 'package:flutter/material.dart';
 import 'screens/splash_screen.dart';
 import 'services/database.dart';
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'SafeCash',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: SplashScreen(),
+      home: HomeScreen(),
     );
   }
 }
