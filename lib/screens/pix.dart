@@ -3,13 +3,7 @@ import 'package:flutter/material.dart';
 import 'maintenance.dart';
 
 class PixScreen extends StatefulWidget {
-  const PixScreen({super.key, this.uid, this.cpf});
-
-  /// uid do usuário (collection `user`) já resolvido
-  final String? uid;
-
-  /// CPF do usuário, usado para resolver o uid se necessário
-  final String? cpf;
+  const PixScreen({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -230,16 +224,8 @@ class _PixScreenState extends State<PixScreen> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => PixFaceRecognitionScreen(
-                uid: widget.uid,
-                cpf: widget.cpf,
-              ),
-            ),
-          );
+        onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const PixFaceRecognitionScreen(),));
+          
         },
         child: Text("Enviar",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
