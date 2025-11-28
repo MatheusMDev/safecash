@@ -41,10 +41,19 @@ class User {
       //photoUrl: map['photo_url']?.toString(),
       pw: (map['pw'] ?? '').toString(),
       createdAt: createdAtParsed,
-      embedding: (map['embedding'] != null)
-          ? List<String>.from(map['embedding'])
-          : null,
+      embedding: _parseEmbedding(map['embedding']),
     );
+  }
+
+  static List<String>? _parseEmbedding(dynamic value) {
+    if (value == null) return null;
+    if (value is Iterable) {
+      return value
+          .map((e) => e?.toString() ?? '')
+          .where((e) => e.isNotEmpty)
+          .toList();
+    }
+    return null;
   }
 
   // model -> map (ex.: para salvar no Firestore)

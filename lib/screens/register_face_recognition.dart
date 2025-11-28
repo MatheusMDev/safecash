@@ -1,13 +1,16 @@
 import 'dart:convert';
-import 'package:bank_app/screens/face_recognition.dart';
+import 'package:bank_app/screens/register_face_recognition_fail.dart';
+import 'package:bank_app/screens/register_face_recognition_sucess.dart';
 import 'package:bank_app/widgets/create_user.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:bank_app/services/api.dart';
 
 class RegisterFaceScreenRecognition extends StatefulWidget {
-  const RegisterFaceScreenRecognition({super.key, this.cpf});
+  const RegisterFaceScreenRecognition({super.key, this.cpf, this.uid});
 
   final String? cpf;
+  final String? uid;
 
   @override
   _RegisterFaceScreenState createState() => _RegisterFaceScreenState();
@@ -17,19 +20,57 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
   late CameraController _cameraController;
   late Future<void> _initializeControllerFuture;
   bool _isLoading = false;
-  bool _isCameraReady =
-      false; // Estado para verificar se a camera foi inicializada
-  bool _isCaptured = false; // Controla o estado de expansao do oval (captura)
+  bool _isCameraReady = false;
+  bool _isCaptured = false;
+
+  // ignore: unused_field
   final UserController _userController = UserController();
   final List<String> _capturedImages = [];
+  static const int _photosNeeded = 2;
+  String? _resolvedUid;
+
+  int get _remainingPhotos {
+    final remaining = _photosNeeded - _capturedImages.length;
+    return remaining > 0 ? remaining : 0;
+  }
+
+  int get _nextPhotoNumber {
+    final next = _capturedImages.length + 1;
+    return next > _photosNeeded ? _photosNeeded : next;
+  }
 
   @override
   void initState() {
     super.initState();
+    _resolvedUid = widget.uid;
+    // Tenta resolver o UID logo ao iniciar, caso venha apenas o CPF
+    _ensureUid();
     _checkCameraPermission();
   }
 
-  // Verificar se a permissao da camera foi concedida
+  Future<String?> _ensureUid() async {
+    if (_resolvedUid != null && _resolvedUid!.isNotEmpty) return _resolvedUid;
+
+    final cpf = widget.cpf;
+    if (cpf == null || cpf.isEmpty) return null;
+
+    try {
+      final user = await _userController.fetchByCpf(cpf);
+      final uid = user?.id;
+      if (uid != null && uid.isNotEmpty && mounted) {
+        setState(() {
+          _resolvedUid = uid;
+        });
+      } else {
+        _resolvedUid = uid;
+      }
+      return uid;
+    } catch (e) {
+      print('Erro ao buscar UID por CPF: $e');
+      return null;
+    }
+  }
+
   void _checkCameraPermission() async {
     final cameras = await availableCameras();
     if (cameras.isNotEmpty) {
@@ -37,66 +78,90 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
     }
   }
 
-  // Inicializa a camera
   void _initializeCamera() async {
     try {
       final cameras = await availableCameras();
       final firstCamera = cameras.first;
       _cameraController = CameraController(firstCamera, ResolutionPreset.high);
       _initializeControllerFuture = _cameraController.initialize();
-      await _initializeControllerFuture; // Aguardar a inicializacao da camera
+      await _initializeControllerFuture;
       setState(() {
-        _isCameraReady =
-            true; // Atualiza o estado para indicar que a camera esta pronta
+        _isCameraReady = true;
       });
     } catch (e) {
       print("Erro ao inicializar a camera: $e");
     }
   }
 
-  // Funcao para capturar a foto
+  // Função para capturar a foto e enviar para a API
   void _capturePhoto() async {
-    if (_isLoading) return; // evita duplo clique/reload
+    if (_isLoading) return;
+
+    setState(() {
+      _isCaptured = true;
+      _isLoading = true;
+    });
 
     try {
-      setState(() {
-        _isCaptured = true; // Aumenta o tamanho do oval
-        _isLoading = true;
-      });
-
-      // Aguarda a inicializacao da camera
       await _initializeControllerFuture;
 
-      // Captura a imagem
+      // 2) Captura a imagem
       final image = await _cameraController.takePicture();
 
       // Converte a imagem para Base64
       final imageBytes = await image.readAsBytes();
       final imageBase64 = base64Encode(imageBytes);
 
-      // Acumula base64 para permitir mais de uma captura
-      _capturedImages.add(imageBase64);
+      // Adiciona a imagem Base64 à lista (caso queira capturar mais vezes)
+      setState(() {
+        _capturedImages.add(imageBase64);
+        if (_capturedImages.length > _photosNeeded) {
+          _capturedImages.removeAt(0);
+        }
+      });
 
-      // Salva o embedding (base64) no usuario pelo CPF, se informado
-      if ((widget.cpf ?? '').isNotEmpty) {
-        final updatedUser = await _userController.saveEmbeddingByCpf(
-          cpf: widget.cpf!.trim(),
-          embedding: _capturedImages,
-        );
-        if (updatedUser == null) {
-          print('Falha ao salvar embedding no Firestore.');
-        } else {
-          print(
-            'Embedding salvo (${_capturedImages.length} captura[s]) para CPF ${updatedUser.cpf}',
+      const email = "teste@teste.com";
+      const password = "123456";
+
+      final idToken = await captureIDToken(email, password);
+
+      if (idToken == null) {
+        print("Erro ao obter idToken");
+        return;
+      }
+
+      final uid = await _ensureUid();
+      if (uid == null || uid.isEmpty) {
+        print("UID ausente. Nao foi possivel enviar para a API.");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('UID do usuario nao encontrado.')),
           );
         }
+        return;
+      }
+
+      print("idToken obtido: $idToken");
+
+      final imagesToSend = _capturedImages.take(_photosNeeded).toList();
+
+      // 3) Chama a API FastAPI /register-face com o idToken e as imagens
+      final success = await registerFace(uid, idToken, imagesToSend);
+
+      if (success) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const FaceRecognitionScreenSucess(),
+          ),
+        );
       } else {
-        print('CPF nao informado; embedding nao salvo.');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const FaceRecognitionScreenFail()),
+        );
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
       print('Erro ao capturar a foto: $e');
     } finally {
       if (mounted) {
@@ -156,7 +221,7 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
                         width: 200,
                         height: 60,
                         child: ElevatedButton(
-                          onPressed: _capturePhoto,
+                          onPressed: _isLoading ? null : _capturePhoto,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color.fromRGBO(
                               0,
@@ -168,9 +233,9 @@ class _RegisterFaceScreenState extends State<RegisterFaceScreenRecognition> {
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                          child: const Text(
-                            'Prosseguir',
-                            style: TextStyle(
+                          child: Text(
+                            'Capturar foto $_nextPhotoNumber/$_photosNeeded',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
