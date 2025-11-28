@@ -1,15 +1,19 @@
 import 'dart:convert';
-import 'package:bank_app/screens/register_face_recognition_fail.dart';
-import 'package:bank_app/screens/register_face_recognition_sucess.dart';
+import 'package:bank_app/screens/face_recognition_fail.dart';
+import 'package:bank_app/screens/face_recognition_sucess.dart';
 import 'package:bank_app/widgets/create_user.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:bank_app/services/api.dart';
 
 class FaceRecognitionScreen extends StatefulWidget {
-  const FaceRecognitionScreen({super.key, this.cpf});
+  const FaceRecognitionScreen({super.key, this.cpf, this.uid});
 
+  /// CPF do usuário (caso você queira localizar o uid na collection `user`)
   final String? cpf;
+
+  /// uid do usuário na collection `user` (se já tiver direto, melhor ainda)
+  final String? uid;
 
   @override
   _FaceRecognitionScreenState createState() => _FaceRecognitionScreenState();
@@ -22,29 +26,58 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
   bool _isCameraReady = false;
   bool _isCaptured = false;
 
-  // Lista de imagens será simplificada para armazenar uma única imagem
+  final UserController _userController = UserController();
+  String? _resolvedUid;
+
+  // para verify-face só preciso de UMA imagem
   String? _capturedImage;
-  static const int _photosNeeded = 1;
-
-  int get _remainingPhotos {
-    final remaining = _photosNeeded - (_capturedImage == null ? 0 : 1);
-    return remaining > 0 ? remaining : 0;
-  }
-
-  int get _nextPhotoNumber {
-    return (_capturedImage == null) ? 1 : _photosNeeded;
-  }
 
   @override
   void initState() {
     super.initState();
+    // Se já vier o uid na navegação, usa direto
+    _resolvedUid = widget.uid;
+    // Se veio só CPF, tenta resolver uid na collection `user`
+    _ensureUid();
     _checkCameraPermission();
+  }
+
+  /// Garante que _resolvedUid esteja preenchido.
+  /// Se uid já veio via widget, só retorna.
+  /// Caso contrário, tenta localizar por CPF na collection `user`.
+  Future<String?> _ensureUid() async {
+    if (_resolvedUid != null && _resolvedUid!.isNotEmpty) {
+      return _resolvedUid;
+    }
+
+    final cpf = widget.cpf;
+    if (cpf == null || cpf.isEmpty) {
+      return null;
+    }
+
+    try {
+      final user = await _userController.fetchByCpf(cpf);
+      final uid = user?.id;
+      if (mounted) {
+        setState(() {
+          _resolvedUid = uid;
+        });
+      } else {
+        _resolvedUid = uid;
+      }
+      return uid;
+    } catch (e) {
+      print('Erro ao buscar UID por CPF: $e');
+      return null;
+    }
   }
 
   void _checkCameraPermission() async {
     final cameras = await availableCameras();
     if (cameras.isNotEmpty) {
       _initializeCamera();
+    } else {
+      print('Nenhuma câmera disponível');
     }
   }
 
@@ -55,17 +88,19 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
       _cameraController = CameraController(firstCamera, ResolutionPreset.high);
       _initializeControllerFuture = _cameraController.initialize();
       await _initializeControllerFuture;
-      setState(() {
-        _isCameraReady = true;
-      });
+      if (mounted) {
+        setState(() {
+          _isCameraReady = true;
+        });
+      }
     } catch (e) {
       print("Erro ao inicializar a camera: $e");
     }
   }
 
-  // Função para capturar a foto e enviar para a API
+  // Captura a foto e envia para /verify-face
   void _capturePhoto() async {
-    if (_isLoading) return; // Evita capturar mais de uma foto
+    if (_isLoading) return;
 
     setState(() {
       _isCaptured = true;
@@ -75,48 +110,83 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
     try {
       await _initializeControllerFuture;
 
-      // 2) Captura a imagem
+      // 1) Captura a imagem
       final image = await _cameraController.takePicture();
 
-      // Converte a imagem para Base64
+      // 2) Converte a imagem para Base64
       final imageBytes = await image.readAsBytes();
       final imageBase64 = base64Encode(imageBytes);
 
-      // Armazenando apenas a imagem capturada
       setState(() {
         _capturedImage = imageBase64;
       });
 
-      // Obtém o idToken do Firebase (passando email e senha)
+      if (_capturedImage == null) {
+        print("Nenhuma imagem capturada.");
+        return;
+      }
+
+      // 3) Obter idToken do Firebase (usuário técnico)
       const email = "teste@teste.com";
       const password = "123456";
-      final idToken = await captureIDToken(email, password);
 
+      final idToken = await captureIDToken(email, password);
       if (idToken == null) {
         print("Erro ao obter idToken");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Falha ao obter idToken. Tente novamente.'),
+            ),
+          );
+        }
+        return;
+      }
+
+      // 4) Garantir UID (via prop ou CPF)
+      final uid = await _ensureUid();
+      if (uid == null || uid.isEmpty) {
+        print("UID ausente. Nao foi possivel enviar para a API.");
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('UID do usuario nao encontrado.')),
+          );
+        }
         return;
       }
 
       print("idToken obtido: $idToken");
+      print("uid resolvido: $uid");
 
-      // Envia a imagem para o endpoint de verificação
-      final success = await verifyFace(idToken, _capturedImage!);
+      // 5) Chamar /verify-face
+      final success = await verifyFace(
+        uid: uid,
+        idToken: idToken,
+        imageBase64: _capturedImage!,
+      );
 
       if (success) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => const FaceRecognitionScreenSucess(),
+            builder: (_) => const FaceRecognitionSucess(),
           ),
         );
       } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const FaceRecognitionScreenFail()),
+          MaterialPageRoute(
+            builder: (_) => const FaceRecognitionFail(),
+          ),
         );
       }
     } catch (e) {
       print('Erro ao capturar a foto: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao capturar/verificar face: $e')),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -139,20 +209,17 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
       body: _isCameraReady
           ? Stack(
               children: [
-                // Exibe a visualização da câmera
                 Positioned.fill(child: CameraPreview(_cameraController)),
-                // Exibe o oval dinâmico
                 Positioned.fill(
                   child: TweenAnimationBuilder<Size?>(
                     duration: const Duration(seconds: 1),
                     curve: Curves.easeInOut,
                     tween: SizeTween(
-                      end: _isCaptured
-                          ? const Size(380, 480)
-                          : const Size(380, 480),
+                      end: const Size(380, 480),
                     ),
                     builder: (context, value, _) {
-                      final ovalContainerSize = value ?? const Size(260, 340);
+                      final ovalContainerSize =
+                          value ?? const Size(260, 340);
                       return CustomPaint(
                         painter: _OvalOverlayPainter(
                           clipper: _OvalClipper(),
@@ -163,7 +230,6 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
                     },
                   ),
                 ),
-                // Exibe o botão de captura
                 Positioned(
                   bottom: 30,
                   left: 0,
@@ -173,18 +239,17 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
                       width: 200,
                       height: 60,
                       child: ElevatedButton(
-                        onPressed: _isLoading
-                            ? null
-                            : _capturePhoto, // Desabilita após capturar
+                        onPressed: _isLoading ? null : _capturePhoto,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color.fromRGBO(0, 102, 255, 1),
+                          backgroundColor:
+                              const Color.fromRGBO(0, 102, 255, 1),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child: Text(
-                          'Capturar foto $_nextPhotoNumber/$_photosNeeded',
-                          style: const TextStyle(
+                        child: const Text(
+                          'Capturar foto 1/1',
+                          style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -194,7 +259,6 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
                     ),
                   ),
                 ),
-                // Mostra um indicador de carregamento enquanto o processo de captura está em andamento
                 if (_isLoading)
                   const Center(child: CircularProgressIndicator()),
               ],
@@ -219,12 +283,13 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
                     width: 300,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(0, 102, 255, 1),
+                        backgroundColor:
+                            const Color.fromRGBO(0, 102, 255, 1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
                       ),
-                      onPressed: _checkCameraPermission, // Botão que tenta acessar a câmera
+                      onPressed: _checkCameraPermission,
                       child: const Text(
                         'Conceder Permissão',
                         style: TextStyle(
@@ -243,28 +308,27 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
   }
 }
 
-// Custom Clipper for the oval shape
+// Clipper e Painter iguais aos seus
 class _OvalClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     double centerX = size.width / 2;
     double centerY = size.height / 2;
-    double width = size.width * 0.7; // Ajuste a largura do oval
-    double height = size.height * 0.8; // Ajuste a altura do oval
+    double width = size.width * 0.7;
+    double height = size.height * 0.8;
 
-    return Path()..addOval(
-      Rect.fromCenter(
-        center: Offset(centerX, centerY),
-        width: width,
-        height: height,
-      ),
-    );
+    return Path()
+      ..addOval(
+        Rect.fromCenter(
+          center: Offset(centerX, centerY),
+          width: width,
+          height: height,
+        ),
+      );
   }
 
   @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) {
-    return false;
-  }
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
 class _OvalOverlayPainter extends CustomPainter {
@@ -284,13 +348,15 @@ class _OvalOverlayPainter extends CustomPainter {
           ),
         );
 
-    final overlay =
-        Path()
-          ..fillType = PathFillType.evenOdd
-          ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
-          ..addPath(path, Offset.zero);
+    final overlay = Path()
+      ..fillType = PathFillType.evenOdd
+      ..addRect(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..addPath(path, Offset.zero);
 
-    canvas.drawPath(overlay, Paint()..color = Colors.black.withOpacity(0.8));
+    canvas.drawPath(
+      overlay,
+      Paint()..color = Colors.black.withOpacity(0.8),
+    );
 
     canvas.drawPath(
       path,
@@ -302,7 +368,6 @@ class _OvalOverlayPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _OvalOverlayPainter oldDelegate) {
-    return oldDelegate.containerSize != containerSize;
-  }
+  bool shouldRepaint(covariant _OvalOverlayPainter oldDelegate) =>
+      oldDelegate.containerSize != containerSize;
 }

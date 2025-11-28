@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
     // Sucesso: navega para a tela de face
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => FaceRecognitionScreen()),
+      MaterialPageRoute(builder: (_) => FaceRecognitionScreen(cpf: cpf, uid: user?.id, )),
     );
   }
 
