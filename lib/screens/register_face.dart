@@ -1,13 +1,15 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:bank_app/screens/home.dart';
 import 'package:bank_app/screens/register_face_recognition.dart';
 import 'package:bank_app/screens/register.dart';
 import 'package:flutter/material.dart';
 
 class RegisterFaceScreen extends StatelessWidget {
-  const RegisterFaceScreen({super.key, this.cpf});
+  const RegisterFaceScreen({super.key, this.cpf, this.uid});
 
   final String? cpf;
+  final String? uid;
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +56,9 @@ class RegisterFaceScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RegisterFaceScreenRecognition(
-                        cpf: cpf,
-                      ),
+                      builder:
+                          (context) =>
+                              RegisterFaceScreenRecognition(cpf: cpf, uid: uid),
                     ),
                   );
                 },
@@ -85,7 +87,7 @@ class RegisterFaceScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => RegisterScreen()),
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
                   );
                 },
                 child: const Text(

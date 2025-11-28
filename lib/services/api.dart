@@ -32,10 +32,18 @@ Future<String?> captureIDToken(String email, String password) async {
   }
 }
 
-Future<bool> registerFace(String idToken, List<String> imageBase64) async {
+Future<bool> registerFace(
+  String uid,
+  String idToken,
+  List<String> imageBase64,
+) async {
   final url = Uri.parse('http://localhost:8000/register-face');
 
-  final body = jsonEncode({'idToken': idToken, 'images_base64': imageBase64});
+  final body = jsonEncode({
+    'uid': uid,
+    'idToken': idToken,
+    'images_base64': imageBase64,
+  });
 
   final headers = {'Content-Type': 'application/json'};
 
